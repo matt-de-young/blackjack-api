@@ -1,0 +1,37 @@
+version: "3"
+services:
+  api:
+    build: .
+    environment:
+      FLASK_DEBUG: 1
+      FLASK_ENV: "development"
+      # DATABASE_URL: postgresql://admin@db:5432/blackjack
+      ORATOR_DATABASE: "dev"
+      DATABASE_HOST: "db"
+      DATABASE_DATABASE: "blackjack"
+      DATABASE_USER: "admin"
+    ports: ['5000:5000']
+    volumes:
+       - ./api:/app/api
+    links:
+      - db
+    depends_on:
+      - db
+      # - migration
+
+  db:
+    image: postgres:12.0-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=blackjack
+
+  # migration:
+  #   build: ./migrate-db
+  #   volumes:
+  #     - ./migrate-db:/app/
+  #     - ./migrations:/app/migrations
+  #   command: ["./wait-for-it/wait-for-it.sh", "db:5432", "--", "python", "db.py", "migrate"]
+  #   links:
+  #     - db
+  #   depends_on:
+  #     - db
